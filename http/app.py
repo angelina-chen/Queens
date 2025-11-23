@@ -19,7 +19,6 @@ from helpers.Game import Game  # noqa: E402
 
 app = Flask(__name__, static_url_path="", static_folder="static")
 
-
 # ---------------- Supabase Helpers ---------------- #
 
 def supabase_headers():
@@ -30,14 +29,11 @@ def supabase_headers():
         "Prefer": "return=representation",
     }
 
-
 def get_latest_puzzle_id():
-    """Fallback: ask Supabase for the most recently inserted puzzle."""
     url = f"{SUPABASE_URL}/rest/v1/{PUZZLES_TABLE}?select=id&order=id.desc&limit=1"
     resp = requests.get(url, headers=supabase_headers())
 
     print("Fallback fetch status:", resp.status_code, repr(resp.text))
-
     if resp.ok:
         try:
             latest = resp.json()[0]["id"]
@@ -47,13 +43,9 @@ def get_latest_puzzle_id():
             print("❌ Failed to parse fallback ID:", e)
     else:
         print("❌ Failed to fetch latest puzzle:", resp.text)
-
     return None
 
-
 def save_user_puzzle(puzzle_data):
-    """Insert puzzle and safely get its ID (with fallback)."""
-
     if not SUPABASE_URL or not SUPABASE_KEY:
         print("❌ Supabase env vars missing")
         return None
@@ -66,25 +58,22 @@ def save_user_puzzle(puzzle_data):
     }
 
     print("📤 Inserting puzzle row:", json.dumps(row, indent=2))
-    resp = requests.post(url, headers=supabase_headers(), json=row)
+    resp = requests.post(url, headers=supabase_headers(), json=[row])
     print("📥 Supabase insert response:", resp.status_code, repr(resp.text))
 
     if not resp.ok:
         print("❌ Error during insert:", resp.text)
         return None
 
-    # Try reading returned JSON
     try:
         inserted = resp.json()
         print("Inserted row returned:", inserted)
         return inserted[0]["id"]
-    except Exception as e:
+    except Exception:
         print("⚠️ Insert returned no JSON. Using fallback.")
         return get_latest_puzzle_id()
 
-
 def load_user_puzzles():
-    """Load all puzzles."""
     if not SUPABASE_URL or not SUPABASE_KEY:
         return {}
 
@@ -106,7 +95,6 @@ def load_user_puzzles():
         }
     return puzzles
 
-
 def record_solve_time(puzzle_id, solve_time):
     if not SUPABASE_URL or not SUPABASE_KEY:
         print("Supabase env vars missing; skipping time log.")
@@ -116,7 +104,6 @@ def record_solve_time(puzzle_id, solve_time):
     row = {"puzzle_id": str(puzzle_id), "solve_time": float(solve_time)}
     resp = requests.post(url, headers=supabase_headers(), json=row)
     print("SAVE TIME RESPONSE:", resp.status_code, resp.text)
-
 
 def get_global_average_time():
     if not SUPABASE_URL or not SUPABASE_KEY:
@@ -131,9 +118,8 @@ def get_global_average_time():
         return "N/A"
 
     rows = resp.json()
-    times = [float(r["solve_time"]) for r in rows]
+    times = [float(r["solve_time"]) for r in rows if "solve_time" in r]
     return round(sum(times) / len(times), 2) if times else "N/A"
-
 
 # ---------------- Routes ---------------- #
 
@@ -142,24 +128,19 @@ def login():
     temp_game = Game()
     return render_template("index.html", title=temp_game.title)
 
-
 @app.route("/game")
 def game():
     username = request.args.get("username_new") or request.args.get("username_existing")
     difficulty = request.args.get("difficulty", "easy")
-
     size = int(request.args.get("board_size", "7"))
 
-    # Generate puzzle
     my_game = Game(size)
     puzzle_data = my_game.generate_puzzle(easy=(difficulty == "easy"))
 
-    # Save puzzle to Supabase
     puzzle_id = save_user_puzzle(puzzle_data)
     if puzzle_id is None:
         return jsonify({"error": "Failed to save puzzle"}), 500
 
-    # Prepare template
     regions = puzzle_data["regions"]
     board_data = [["☐" for _ in range(size)] for _ in range(size)]
 
@@ -175,13 +156,15 @@ def game():
 
     return render_template("game.html", info=template_info)
 
-
 @app.route("/solve/<id>", methods=["POST"])
 def process_results(id):
     try:
         data = request.json or {}
 
-        board_data = {k: v for k, v in data.items() if "_" in k}
+        board_data = {
+            k: v for k, v in data.items()
+            if "_" in k and k.split("_")[0].isdigit() and k.split("_")[1].isdigit()
+        }
 
         board_size = int(len(board_data) ** 0.5)
         board = [["☐" for _ in range(board_size)] for _ in range(board_size)]
@@ -201,7 +184,6 @@ def process_results(id):
         my_game = Game(board_size)
         my_game.latest_solution = solution
 
-        # Build queen positions
         queen_positions = [-1] * board_size
         for r in range(board_size):
             for c in range(board_size):
@@ -216,17 +198,23 @@ def process_results(id):
 
         avg_time = get_global_average_time()
 
-        return jsonify({"result": result, "user_time": data.get("solve_time"), "average_time": avg_time})
+        return jsonify({
+            "result": result,
+            "user_time": data.get("solve_time"),
+            "average_time": avg_time
+        })
 
     except Exception:
         print("❌ Error:", traceback.format_exc())
         return jsonify({"result": "Server error."}), 500
 
-
 @app.route("/hint/<id>", methods=["POST"])
 def give_hint(id):
     data = request.json or {}
-    board_data = {k: v for k, v in data.items() if "_" in k}
+    board_data = {
+        k: v for k, v in data.items()
+        if "_" in k and k.split("_")[0].isdigit() and k.split("_")[1].isdigit()
+    }
 
     board_size = int(len(board_data) ** 0.5)
     board = [["☐" for _ in range(board_size)] for _ in range(board_size)]
@@ -248,7 +236,6 @@ def give_hint(id):
         return jsonify({"row": hint[0], "col": hint[1]})
 
     return jsonify({"message": "No valid hint found"})
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))

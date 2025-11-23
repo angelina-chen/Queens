@@ -2,13 +2,18 @@ import unittest
 import sys
 import os
 
+# Get path to project root
 current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.join(current_dir, '..')
-sys.path.append(parent_dir)
+project_root = os.path.join(current_dir, '..')
 
-Queens = None
-if not Queens:
-    from queens import Queens as Queens 
+# Path to your http/ directory, which contains queens.py
+http_dir = os.path.join(project_root, 'http')
+
+# Add http/ to module search path
+sys.path.append(http_dir)
+
+# Import Queens from http/queens.py
+from queens import Queens
 
 class Test_Queens_has_collision(unittest.TestCase):
 

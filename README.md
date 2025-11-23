@@ -5,6 +5,7 @@
 Updated from private repository. Play it here: [queens-bay.vercel.app](url)
 
 ```mermaid
+%%{init: {'theme': 'dark', 'scale': 1.25}}%%
 ---
 config:
   layout: elk
@@ -13,77 +14,68 @@ config:
 classDiagram
 direction TB
 
-%% =========================
-%% Core Backend
-%% =========================
-
 class FlaskApp {
     <<Flask>>
     +login(): Response
     +game(): Response
-    +process_results(id: str): JSON
-    +give_hint(id: str): JSON
+    +process_results(id): JSON
+    +give_hint(id): JSON
 
     -supabase_headers(): dict
     -get_latest_puzzle_id(): int | None
-    -save_user_puzzle(puzzle_data: dict): int | None
-    -load_user_puzzles(): dict[str, dict]
-    -record_solve_time(puzzle_id: str | int, solve_time: float): void
-    -get_global_average_time(): float | "N/A"
+    -save_user_puzzle(puzzle_data): int | None
+    -load_user_puzzles(): dict
+    -record_solve_time(puzzle_id, solve_time): void
+    -get_global_average_time(): float | N/A
 }
 
 class Game {
     +n: int
     +total_spots: int
-    -__board: list[int]
+    -board_internal: list
     +title: str
-    +symbols: dict[str, str]
+    +symbols: dict
     +start_time: float
-    +latest_solution: list[int] | None
-    +board: list[int]
+    +latest_solution: list | None
+    +board: list
 
     +create_board(n: int): void
     +html(): str
     +__str__(): str
-    +validate_solution(queen_positions: list[int], regions: list[list[int]]): bool
+    +validate_solution(queen_positions, regions): bool
     +generate_puzzle(easy: bool = True): dict
     +get_unique_solution(): dict | None
-    +find_all_solutions(regions: list[list[int]]): list[list[int]]
-    +save_to_data(data: dict): str
-    +live_check_solution(board: list[list[str]]): bool
-    +log_user_time(puzzle_id: str, solve_time: float): void
-    +get_hint(current_board: list[list[str]], regions: list[list[int]]): (int, int) | None
+    +find_all_solutions(regions): list
+    +save_to_data(data): str
+    +live_check_solution(board): bool
+    +log_user_time(puzzle_id, solve_time): void
+    +get_hint(current_board, regions): (int, int) | None
 }
-
 
 class Queens {
     <<Utility>>
     +n: int
-    +board: list[int]
-    +all_solutions: list[list[int]]
+    +board: list
+    +all_solutions: list
 
     +initialize_empty_board(): void
-    +has_collision(board: list[int], current_col: int): bool
-    +solve(num_sol: int = 1000): list[list[int]]
-    +search_all(current_col: int = 0, max_sol: int = 1000): bool
-    +prettify(board: list[int]): str
+    +has_collision(board, col): bool
+    +solve(max_solutions: int = 1000): list
+    +search_all(col, max_solutions): bool
+    +prettify(board): str
     +__str__(): str
 }
 
-%% =========================
-%% Persistence Layer
-%% =========================
-
 class SupabasePuzzles {
-    <<Supabase table: "puzzles">>
+    <<Supabase: puzzles>>
     id: int
-    solution: list[int]
-    regions: list[list[int]]
+    solution: list
+    regions: list
     difficulty: str
 }
 
 class SupabaseTimes {
-    <<Supabase table: "puzzle_times">>
+    <<Supabase: puzzle_times>>
     id: int
     puzzle_id: str
     solve_time: float
@@ -92,68 +84,54 @@ class SupabaseTimes {
 class LocalPuzzlesJSON {
     <<Legacy JSON file>>
     +puzzles.json
-    +save_to_data(data: dict): str
-    +log_user_time(puzzle_id: str, solve_time: float): void
+    +save_to_data(data): str
+    +log_user_time(puzzle_id, solve_time): void
 }
-
-%% =========================
-%% Frontend / Templates
-%% =========================
 
 class IndexTemplate {
     <<Jinja2: index.html>>
-    +form /game?username_new&board_size&difficulty
+    +form /game
 }
 
 class GameTemplate {
     <<Jinja2: game.html>>
-    +render board (table)
-    +inject info: username, board_id, board_size, regions, symbols
-    +includes footer.html
+    +render board
+    +inject info
 }
 
 class BrowserClient {
     <<JavaScript>>
-    +handleClick(e): void
-    +countQueens(): int
-    +prepareData(): dict
-    +submitSolution(): Promise
-    +requestHint(): Promise
+    +handleClick(e)
+    +countQueens()
+    +prepareData()
+    +submitSolution()
+    +requestHint()
 }
 
 class Styles {
-    <<CSS: styles.css>>
-    +board + regions styling
-    +responsive layout
+    <<CSS>>
 }
 
 class VercelConfig {
     <<vercel.json>>
-    builds: @vercel/python
-    routes: /(.*) -> http/app.py
+    builds
+    routes
 }
 
+FlaskApp --> Game
+Game ..> Queens
 
-%% =========================
-%% Relationships
-%% =========================
+FlaskApp --> SupabasePuzzles
+FlaskApp --> SupabaseTimes
+Game --> LocalPuzzlesJSON
 
-FlaskApp --> Game 
-Game ..> Queens 
-
-FlaskApp --> SupabasePuzzles 
-FlaskApp --> SupabaseTimes 
-Game --> LocalPuzzlesJSON 
-
-FlaskApp --> IndexTemplate 
-FlaskApp --> GameTemplate 
+FlaskApp --> IndexTemplate
+FlaskApp --> GameTemplate
 
 BrowserClient --> FlaskApp 
-BrowserClient --> FlaskApp 
-BrowserClient --> FlaskApp 
-
 GameTemplate --> BrowserClient
+
 IndexTemplate --> Styles
 GameTemplate --> Styles
 
-VercelConfig --> FlaskApp 
+VercelConfig --> FlaskApp

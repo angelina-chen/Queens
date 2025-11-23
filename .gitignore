@@ -1,0 +1,28 @@
+# Python cache & compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+
+# Environment variables (CRITICAL)
+.env
+*.env
+
+# macOS junk
+.DS_Store
+
+# IDE settings
+.vscode/
+.idea/
+workspace.xml
+shelf/
+httpRequests/
+dataSources/
+dataSources.local.xml
+
+# Logs
+*.log

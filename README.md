@@ -4,6 +4,11 @@
 
 Updated from private repository. Play it here: [queens-bay.vercel.app](url)
 
+Uses LinkedIn Queens rules: 
+1. Each row, column, and colored region must contain exactly one Crown symbol (Queen).
+2. Crown symbols cannot be placed in adjacent cells, including diagonally.
+3. Click or tap on cells to toggle between empty cells, marked (bolded box) symbol, and Crown symbol.
+
 ```mermaid
 ---
 config:

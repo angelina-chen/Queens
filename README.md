@@ -2,7 +2,7 @@
 
 ## A Flask-powered N-Queens puzzle generator and solver
 
-Updated from private repository. Play it here: [queens-bay.vercel.app](url)
+Updated from private repository. Play it here: [queens-bay.vercel.app](https://queens-bay.vercel.app)
 
 Uses LinkedIn Queens rules: 
 1. Each row, column, and colored region must contain exactly one Crown symbol (Queen).

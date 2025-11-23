@@ -32,24 +32,6 @@
 
   <hr>
 
-  <!-- existing puzzle section -->
-  <h2>Load Existing Puzzle</h2>
-  <form action="/game" method="GET">
-    <label for="username_existing">Username:</label>
-    <input type="text" id="username_existing" name="username_existing" required><br><br>
-
-    <label for="puzzle_id">Select Puzzle ID:</label>
-    <select id="puzzle_id" name="puzzle_id">
-      {% for puzzle_id, meta in puzzle_ids.items() %}
-        <option value="{{ puzzle_id }}">
-          Puzzle {{ puzzle_id }} ({{ meta.rows }}x{{ meta.cols }}, {{ meta.difficulty | capitalize }})
-        </option>
-      {% endfor %}
-    </select><br><br>
-
-    <input type="submit" value="Load Puzzle">
-  </form>
-
   {% include 'partials/footer.html' %}
 
 </body>

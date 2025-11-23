@@ -61,13 +61,6 @@ def load_user_puzzles():
 
 
 def save_user_puzzle(puzzle_id, puzzle_data):
-    """
-    Insert a new puzzle into Supabase `puzzles` table.
-
-    Args:
-        puzzle_id (str): ID for the puzzles table.
-        puzzle_data (dict): must contain "solution", "regions", "difficulty".
-    """
     if not SUPABASE_URL or not SUPABASE_KEY:
         print("Supabase env vars missing; skipping save.")
         return
@@ -79,7 +72,10 @@ def save_user_puzzle(puzzle_id, puzzle_data):
         "regions": puzzle_data["regions"],
         "difficulty": puzzle_data.get("difficulty", "easy"),
     }
+
     resp = requests.post(url, headers=supabase_headers(), json=row)
+    print("SAVE PUZZLE RESPONSE:", resp.status_code, resp.text)  # ADD THIS LINE
+
     if not resp.ok:
         print("Error saving puzzle to Supabase:", resp.text)
 
@@ -93,6 +89,7 @@ def record_solve_time(puzzle_id, solve_time):
     url = f"{SUPABASE_URL}/rest/v1/{TIMES_TABLE}"
     row = {"puzzle_id": str(puzzle_id), "solve_time": float(solve_time)}
     resp = requests.post(url, headers=supabase_headers(), json=row)
+    print("SAVE TIME RESPONSE:", resp.status_code, resp.text)
     if not resp.ok:
         print("Error saving solve_time to Supabase:", resp.text)
 

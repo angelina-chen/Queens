@@ -1,4 +1,7 @@
 # Queens
+
+## A Flask-powered N-Queens puzzle generator and solver
+
 Updated from private repository.
 
 ```mermaid

@@ -161,9 +161,10 @@ def process_results(id):
     try:
         data = request.json or {}
 
+        # Only include keys like "2_3" — 1 underscore and both parts are digits
         board_data = {
             k: v for k, v in data.items()
-            if "_" in k and k.split("_")[0].isdigit() and k.split("_")[1].isdigit()
+            if "_" in k and len(k.split("_")) == 2 and all(part.isdigit() for part in k.split("_"))
         }
 
         board_size = int(len(board_data) ** 0.5)
@@ -184,6 +185,7 @@ def process_results(id):
         my_game = Game(board_size)
         my_game.latest_solution = solution
 
+        # Build queen positions
         queen_positions = [-1] * board_size
         for r in range(board_size):
             for c in range(board_size):
@@ -193,14 +195,15 @@ def process_results(id):
         valid = my_game.validate_solution(queen_positions, regions)
         result = "Correct!" if valid else "Incorrect."
 
+        user_time = float(data.get("solve_time", 0))
         if valid:
-            record_solve_time(id, float(data.get("solve_time", 0)))
+            record_solve_time(id, user_time)
 
         avg_time = get_global_average_time()
 
         return jsonify({
             "result": result,
-            "user_time": data.get("solve_time"),
+            "user_time": round(user_time, 2),
             "average_time": avg_time
         })
 

@@ -92,7 +92,7 @@ def save_user_puzzle(puzzle_data):
         print("Inserted row returned:", inserted)
         return inserted[0]["id"]
     except Exception:
-        print("⚠️ Insert returned no JSON. Using fallback.")
+        print("Insert returned no JSON. Using fallback.")
         return get_latest_puzzle_id()
 
 

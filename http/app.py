@@ -59,6 +59,20 @@ def load_user_puzzles():
             "difficulty": row.get("difficulty", "easy"),
         }
     return puzzles
+    
+    def get_latest_puzzle_id():
+        url = f"{SUPABASE_URL}/rest/v1/{PUZZLES_TABLE}?select=id&order=id.desc&limit=1"
+        resp = requests.get(url, headers=supabase_headers())
+        if resp.ok:
+            try:
+                latest = resp.json()[0]["id"]
+                print("Fetched fallback puzzle ID:", latest)
+                return latest
+            except Exception as e:
+                print("Failed to parse fallback ID:", e)
+        else:
+            print("Failed to fetch latest puzzle:", resp.text)
+        return None
 
 
 def save_user_puzzle(puzzle_data):
@@ -73,18 +87,20 @@ def save_user_puzzle(puzzle_data):
         "difficulty": puzzle_data.get("difficulty", "easy"),
     }
 
+    print("📤 Inserting puzzle row:", json.dumps(row, indent=2))
     resp = requests.post(url, headers=supabase_headers(), json=[row])
-    print("SAVE PUZZLE RESPONSE:", resp.status_code, resp.text)
+    print("📥 Supabase response:", resp.status_code, repr(resp.text))
 
     if not resp.ok:
-        print("Error saving puzzle to Supabase:", resp.text)
+        print("Error saving puzzle:", resp.text)
         return None
 
+    # Try to extract the inserted puzzle ID (if returned)
     try:
-        return resp.json()[0]["id"]  # auto-assigned numeric ID
+        return resp.json()[0]["id"]
     except Exception as e:
-        print("Error extracting new puzzle ID:", e)
-        return None
+        print("No JSON body returned. Trying fallback fetch.")
+        return get_latest_puzzle_id()
 
 
 def record_solve_time(puzzle_id, solve_time):

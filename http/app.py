@@ -60,24 +60,30 @@ def load_user_puzzles():
     return puzzles
 
 
-def save_user_puzzle(puzzle_id, puzzle_data):
+def save_user_puzzle(puzzle_data):
     if not SUPABASE_URL or not SUPABASE_KEY:
         print("Supabase env vars missing; skipping save.")
-        return
+        return None
 
     url = f"{SUPABASE_URL}/rest/v1/{PUZZLES_TABLE}"
     row = {
-        "id": puzzle_id,
         "solution": puzzle_data["solution"],
         "regions": puzzle_data["regions"],
         "difficulty": puzzle_data.get("difficulty", "easy"),
     }
 
-    resp = requests.post(url, headers=supabase_headers(), json=row)
-    print("SAVE PUZZLE RESPONSE:", resp.status_code, resp.text)  # ADD THIS LINE
+    resp = requests.post(url, headers=supabase_headers(), json=[row])
+    print("SAVE PUZZLE RESPONSE:", resp.status_code, resp.text)
 
     if not resp.ok:
         print("Error saving puzzle to Supabase:", resp.text)
+        return None
+
+    try:
+        return resp.json()[0]["id"]  # auto-assigned numeric ID
+    except Exception as e:
+        print("Error extracting new puzzle ID:", e)
+        return None
 
 
 def record_solve_time(puzzle_id, solve_time):
@@ -165,15 +171,10 @@ def game():
     my_game = Game(size)
     puzzle_data = my_game.generate_puzzle(easy=(difficulty == "easy"))
 
-    existing = load_user_puzzles()
-    numeric_ids = [int(k) for k in existing.keys() if str(k).isdigit()]
-    next_id_num = max(numeric_ids) + 1 if numeric_ids else 1000
-    new_id = str(next_id_num)
+    puzzle_id = save_user_puzzle(puzzle_data)
+    if puzzle_id is None:
+        return jsonify({"error": "Failed to save puzzle"}), 500
 
-
-    # Save to Supabase
-    save_user_puzzle(new_id, puzzle_data)
-    puzzle_id = new_id
 
     # Prepare board for display
     regions = puzzle_data["regions"]

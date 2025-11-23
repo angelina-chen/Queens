@@ -66,7 +66,7 @@ def save_user_puzzle(puzzle_data):
     }
 
     print("📤 Inserting puzzle row:", json.dumps(row, indent=2))
-    resp = requests.post(url, headers=supabase_headers(), json=[row])
+    resp = requests.post(url, headers=supabase_headers(), json=row)
     print("📥 Supabase insert response:", resp.status_code, repr(resp.text))
 
     if not resp.ok:

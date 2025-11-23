@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LinkedIn Queens: {{info.username}}</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <h1>LinkedIn Queens: {{info.username}}</h1>
+
+  <h2 id="puzzle_title">Puzzle {{info.board_id}}</h2>
+
+  <table>
+    {% for i in range(info.board_size) %}
+      <tr>
+        {% for j in range(info.board_size) %}
+          {% set cell_id = i ~ "_" ~ j %}
+          {% set value = info.board_data[i][j] %}
+          {% set region = info.regions[i][j] %}
+          <td id="{{ cell_id }}" data-region="{{ region }}">{{ value }}</td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </table>
+
+  <button id="hintButton">Get Hint</button>
+
+  <h2 id="feedback"></h2>
+
+  {% include 'partials/footer.html' %}
+
+  <script>
+    const symbols = {{ info.symbols | safe }};
+    const boardSize = {{ info.board_size }};
+    const cells = document.getElementsByTagName("td");
+    const startTime = Date.now();
+    let submissionTimeout = null;
+
+    function countQueens() {
+      let count = 0;
+      for (let cell of cells) {
+        if (cell.innerText === "👑") count++;
+      }
+      return count;
+    }
+
+    function prepareData() {
+      const data = {};
+      for (let cell of cells) {
+        data[cell.id] = cell.innerText;
+      }
+      const endTime = Date.now();
+      const solveTime = ((endTime - startTime) / 1000).toFixed(2);
+      data.solve_time = solveTime;
+      return data;
+    }
+
+    async function submitSolution() {
+      const data = prepareData();
+      const options = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      };
+
+      try {
+        const res = await fetch(`/solve/{{info.board_id}}`, options);
+        if (res.ok) {
+          const out = await res.json();
+          document.getElementById("feedback").innerHTML =
+            `💙 You: ${out.user_time}s | Avg: ${out.average_time}s - ${out.result}`;
+        } else {
+          document.getElementById("feedback").innerHTML =
+            `🥀 Submission failed. Server error.`;
+        }
+      } catch (err) {
+        document.getElementById("feedback").innerHTML =
+          `🥀 Submission failed. Check connection.`;
+        console.error("Fetch error:", err);
+      }
+    }
+
+    function handleClick(e) {
+      const current = e.target.innerText;
+      const next = symbols[current] || "☐";
+      e.target.innerText = next;
+
+      if (submissionTimeout) clearTimeout(submissionTimeout);
+
+      const queenCount = countQueens();
+      if (queenCount === boardSize) {
+        submissionTimeout = setTimeout(submitSolution, 2000);
+      }
+    }
+
+    for (let cell of cells) {
+      cell.addEventListener("click", handleClick);
+    }
+
+    document.getElementById("hintButton").addEventListener("click", async () => {
+      let data = {};
+      for (let cell of cells) {
+        data[cell.id] = cell.innerText;
+      }
+
+      const options = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      };
+
+      try {
+        const response = await fetch("/hint/{{info.board_id}}", options);
+        if (response.ok) {
+          const hint = await response.json();
+          if (hint.row !== undefined && hint.col !== undefined) {
+            const targetCell = document.getElementById(`${hint.row}_${hint.col}`);
+            targetCell.innerText = "👑";
+            document.getElementById("feedback").innerText =
+              `Hint placed at row ${hint.row}, col ${hint.col}`;
+            if (submissionTimeout) clearTimeout(submissionTimeout);
+            if (countQueens() === boardSize) {
+              submissionTimeout = setTimeout(submitSolution, 2000);
+            }
+          } else {
+            document.getElementById("feedback").innerText = "No hint available.";
+          }
+        }
+      } catch (err) {
+        console.error("Hint fetch error:", err);
+        document.getElementById("feedback").innerText = "Error getting hint.";
+      }
+    });
+  </script>
+</body>
+</html>

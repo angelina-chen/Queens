@@ -23,12 +23,13 @@ app = Flask(__name__, static_url_path="", static_folder="static")
 # ---------------- Supabase helpers ---------------- #
 
 def supabase_headers():
-    """Common headers for Supabase REST calls."""
     return {
         "apikey": SUPABASE_KEY,
         "Authorization": f"Bearer {SUPABASE_KEY}",
         "Content-Type": "application/json",
+        "Prefer": "return=representation",
     }
+
 
 
 def load_user_puzzles():

@@ -14,7 +14,12 @@ Based on LinkedIn Queens:
 - Auto-validation engine  
 - Supabase integration for puzzle storage and stats  
 - Hint engine powered by solution backtracking  
-- Fully deployed on Vercel  
+
+## Tech Stack
+- Frontend: HTML/CSS
+- Backend: Flask (Python), REST endpoints
+- Database: Supabase (Postgres) via REST API
+- Deployment: Vercel (frontend)
 
 ```mermaid
 ---

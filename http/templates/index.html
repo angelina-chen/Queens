@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ title }} - Welcome</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <h1>Welcome to {{ title }}!</h1>
+
+  <!-- new puzzle section -->
+  <h2>Create a New Puzzle</h2>
+  <form action="/game" method="GET">
+    <label for="username_new">Username:</label>
+    <input type="text" id="username_new" name="username_new" required><br><br>
+
+    <label for="board_size">Board Size:</label>
+    <select id="board_size" name="board_size">
+      {% for size in range(5, 11) %}
+        <option value="{{ size }}">{{ size }} x {{ size }}</option>
+      {% endfor %}
+    </select><br><br>
+
+    <label>Difficulty:</label>
+    <input type="radio" id="easy" name="difficulty" value="easy" checked>
+    <label for="easy">Easy</label>
+    <input type="radio" id="hard" name="difficulty" value="hard">
+    <label for="hard">Hard</label><br><br>
+
+    <input type="submit" value="Create New Puzzle">
+  </form>
+
+  <hr>
+
+  <!-- existing puzzle section -->
+  <h2>Load Existing Puzzle</h2>
+  <form action="/game" method="GET">
+    <label for="username_existing">Username:</label>
+    <input type="text" id="username_existing" name="username_existing" required><br><br>
+
+    <label for="puzzle_id">Select Puzzle ID:</label>
+    <select id="puzzle_id" name="puzzle_id">
+      {% for puzzle_id, meta in puzzle_ids.items() %}
+        <option value="{{ puzzle_id }}">
+          Puzzle {{ puzzle_id }} ({{ meta.rows }}x{{ meta.cols }}, {{ meta.difficulty | capitalize }})
+        </option>
+      {% endfor %}
+    </select><br><br>
+
+    <input type="submit" value="Load Puzzle">
+  </form>
+
+  {% include 'partials/footer.html' %}
+
+</body>
+</html>

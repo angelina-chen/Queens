@@ -40,22 +40,21 @@ class Game {
     +symbols: dict[str, str]
     +start_time: float
     +latest_solution: list[int] | None
-
     +board: list[int]
+
     +create_board(n: int): void
     +html(): str
     +__str__(): str
-
     +validate_solution(queen_positions: list[int], regions: list[list[int]]): bool
     +generate_puzzle(easy: bool = True): dict
     +get_unique_solution(): dict | None
     +find_all_solutions(regions: list[list[int]]): list[list[int]]
-
     +save_to_data(data: dict): str
     +live_check_solution(board: list[list[str]]): bool
     +log_user_time(puzzle_id: str, solve_time: float): void
-    +get_hint(current_board: list[list[str]], regions: list[list[int]]): tuple[int,int] | None
+    +get_hint(current_board: list[list[str]], regions: list[list[int]]): (int, int) | None
 }
+
 
 class Queens {
     <<Utility>>

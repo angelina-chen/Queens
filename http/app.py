@@ -1,10 +1,11 @@
 from flask import Flask, jsonify, request, render_template
 import os, sys, json, traceback
 
-# Add helpers/ folder to the path so Game can be imported
-fpath = os.path.join(os.path.dirname(__file__), 'helpers')
-sys.path.append(fpath)
-from helpers import Game
+# Add the http/ directory itself to sys.path so "helpers" is importable as a package/module
+BASE_DIR = os.path.dirname(__file__)
+sys.path.append(BASE_DIR)
+
+from helpers.Game import Game  # import the Game class directly
 
 app = Flask(__name__, static_url_path='', static_folder='static')
 

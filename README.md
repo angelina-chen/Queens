@@ -16,7 +16,7 @@ Based on LinkedIn Queens:
 - Hint engine powered by solution backtracking  
 
 ## Tech Stack
-- Frontend: HTML/CSS
+- Frontend: HTML/CSS, vanilla JS
 - Backend: Flask (Python), REST endpoints
 - Database: Supabase (Postgres) via REST API
 - Deployment: Vercel (frontend)

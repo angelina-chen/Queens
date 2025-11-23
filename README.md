@@ -1,13 +1,22 @@
-# Queens
+# Queens: A Flask-powered N-Queens puzzle generator and solver
+## 🚀 Live Demo  
+👉 **Play it here:** https://queens-bay.vercel.app
 
-## A Flask-powered N-Queens puzzle generator and solver
+Updated from private repository. 
 
-Updated from private repository. Play it here: [queens-bay.vercel.app](https://queens-bay.vercel.app)
-
-Uses LinkedIn Queens rules: 
+## Rules
+Based on LinkedIn Queens:
 1. Each row, column, and colored region must contain exactly one Crown symbol (Queen).
 2. Crown symbols cannot be placed in adjacent cells, including diagonally.
 3. Click or tap on cells to toggle between empty cells, marked (bolded box) symbol, and Crown symbol.
+
+## Features
+- Procedurally generated LinkedIn Queens puzzles  
+- Region-based N-Queens constraints  
+- Auto-validation engine  
+- Supabase integration for puzzle storage and stats  
+- Hint engine powered by solution backtracking  
+- Fully deployed on Vercel  
 
 ```mermaid
 ---

@@ -11,7 +11,7 @@ config:
   theme: neo-dark
 ---
 classDiagram
-direction LR
+direction TB
 
 %% =========================
 %% Core Backend

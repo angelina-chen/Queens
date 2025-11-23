@@ -2,7 +2,7 @@
 
 ## A Flask-powered N-Queens puzzle generator and solver
 
-Updated from private repository. Play it here: queens-bay.vercel.app
+Updated from private repository. Play it here: [queens-bay.vercel.app](url)
 
 ```mermaid
 ---

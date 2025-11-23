@@ -139,22 +139,22 @@ class VercelConfig {
 %% Relationships
 %% =========================
 
-FlaskApp --> Game : uses
-Game ..> Queens : optional solver utility
+FlaskApp --> Game 
+Game ..> Queens 
 
-FlaskApp --> SupabasePuzzles : REST /rest/v1/puzzles
-FlaskApp --> SupabaseTimes : REST /rest/v1/puzzle_times
-Game --> LocalPuzzlesJSON : legacy file I/O
+FlaskApp --> SupabasePuzzles 
+FlaskApp --> SupabaseTimes 
+Game --> LocalPuzzlesJSON 
 
-FlaskApp --> IndexTemplate : render_template("index.html")
-FlaskApp --> GameTemplate : render_template("game.html")
+FlaskApp --> IndexTemplate 
+FlaskApp --> GameTemplate 
 
-BrowserClient --> FlaskApp : /game (GET)
-BrowserClient --> FlaskApp : /solve/{id} (POST)
-BrowserClient --> FlaskApp : /hint/{id} (POST)
+BrowserClient --> FlaskApp 
+BrowserClient --> FlaskApp 
+BrowserClient --> FlaskApp 
 
-GameTemplate --> BrowserClient : inline <script>
+GameTemplate --> BrowserClient
 IndexTemplate --> Styles
 GameTemplate --> Styles
 
-VercelConfig --> FlaskApp : deployment entry
+VercelConfig --> FlaskApp 

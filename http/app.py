@@ -54,24 +54,20 @@ def get_puzzle_ids():
 
 
 @app.route('/')
+@app.route('/')
 def login():
-    """Landing page showing puzzle options."""
     puzzle_ids = get_puzzle_ids()
-    temp_game = Game.Game()
+    temp_game = Game()
     return render_template('index.html', title=temp_game.title, puzzle_ids=puzzle_ids)
-
 
 @app.route('/board')
 def board():
-    """Debug helper: return a string representation of a new board."""
-    temp_game = Game.Game()
+    temp_game = Game()
     return str(temp_game)
-
 
 @app.route('/board_json')
 def board_json():
-    """Debug helper: return board in JSON form."""
-    temp_game = Game.Game()
+    temp_game = Game()
     return jsonify(temp_game.board)
 
 
@@ -104,7 +100,7 @@ def game():
         except ValueError:
             return jsonify({"error": f"Invalid board size '{size_str}'"}), 400
 
-        my_game = Game.Game(size)
+        my_game = Game(size)
         puzzle_data = my_game.generate_puzzle(easy=(difficulty == "easy"))
 
         # Assign a unique new puzzle ID
@@ -120,7 +116,7 @@ def game():
 
     # Set up board for display
     size = len(puzzle_data["regions"])
-    my_game = Game.Game(size)
+    my_game = Game(size)
     my_game.latest_solution = puzzle_data.get("solution")
 
     board_data = [['☐' for _ in range(size)] for _ in range(size)]
@@ -181,7 +177,7 @@ def process_results(id):
         regions = puzzle_data["regions"]
 
         # Validate the submitted queen positions
-        my_game = Game.Game(board_size)
+        my_game = Game(board_size)
         my_game.latest_solution = solution
 
         queen_positions = [-1] * board_size
@@ -245,7 +241,7 @@ def give_hint(id):
     regions = puzzle_data["regions"]
     solution = puzzle_data["solution"]
 
-    my_game = Game.Game(board_size)
+    my_game = Game(board_size)
     my_game.latest_solution = solution
 
     hint = my_game.get_hint(board, regions)

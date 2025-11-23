@@ -1,7 +1,5 @@
 # Queens: A Flask-powered N-Queens puzzle generator and solver
-## Live Demo  
-**Play it here:** https://queens-bay.vercel.app
-
+## Live Demo: https://queens-bay.vercel.app
 Updated from private repository. 
 
 ## Rules

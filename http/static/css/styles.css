@@ -1,0 +1,105 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #fff7fb;
+  color: #333;
+  text-align: center;
+  padding: 30px;
+}
+
+h1, h2 {
+  color: #6a5a8c;
+}
+
+form {
+  background-color: #fef2f6;
+  padding: 20px;
+  border-radius: 12px;
+  margin: 20px auto;
+  display: inline-block;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+label {
+  font-weight: 500;
+  color: #555;
+  display: block;
+  margin-top: 10px;
+}
+
+input, select, button {
+  padding: 10px;
+  font-size: 16px;
+  margin-top: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+button {
+  background-color: #facbd7;
+  color: #333;
+  border: none;
+  margin-top: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #f4a9ba;
+}
+
+table {
+  margin: 20px auto;
+  border-collapse: collapse;
+  background-color: #fff0f5;
+}
+
+td {
+  width: 55px;
+  height: 55px;
+  text-align: center;
+  vertical-align: middle;
+  border: 2px solid #e0cce4;
+  font-size: 32px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+/* Basetile color */
+td[data-region] {
+  background-color: #ffe9f3;
+}
+
+/*region pastel background highlights */
+
+td[data-region='1'] { background-color: #ffd6d6; } /* pink */
+td[data-region='2'] { background-color: #d6f5d6; } /* green */
+td[data-region='3'] { background-color: #d6e0f5; } /* blue */
+td[data-region='4'] { background-color: #fff0b3; } /*yellow */
+td[data-region='5'] { background-color: #f5d6f0; } /*purple-pinkish */
+td[data-region='6'] { background-color: #d6ffff; } /* aqua */
+td[data-region='7'] { background-color: #ffe6cc; } /*peach */
+td[data-region='8'] { background-color: #e0d6ff; } /* purple */
+td[data-region='9'] { background-color: #e6ffe6; } /* green */
+td[data-region='10'] { background-color: #ffe6f2; } /* rose*/
+
+
+td:hover {
+  background-color: #fdd9e8;
+  transform: scale(1.05);
+}
+
+#feedback {
+  margin-top: 20px;
+  font-weight: bold;
+  font-size: 18px;
+  color: #7a4c74;
+}
+
+@media (max-width: 600px) {
+  td {
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+  }
+}

@@ -165,11 +165,10 @@ def game():
     my_game = Game(size)
     puzzle_data = my_game.generate_puzzle(easy=(difficulty == "easy"))
 
-    # Choose a new numeric ID based on existing Supabase puzzles
-    existing = load_user_puzzles()
-    numeric_ids = [int(k) for k in existing.keys() if str(k).isdigit()]
-    next_id_num = max(numeric_ids) + 1 if numeric_ids else 1000
-    new_id = str(next_id_num)
+    # User ID tracking
+    import uuid
+    new_id = str(uuid.uuid4())  # generates something like 'dfe5c6ac-f40f-4c3e-bd72-e16a5b43a730'
+
 
     # Save to Supabase
     save_user_puzzle(new_id, puzzle_data)

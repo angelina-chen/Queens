@@ -32,10 +32,19 @@ def load_user_puzzles():
 
 
 def save_user_puzzles(puzzles):
-    """Save user puzzle data to disk."""
-    with open(PUZZLE_FILE_USER, "w") as f:
-        json.dump(puzzles, f, indent=2)
+    """
+    Save user puzzle data to disk.
 
+    On Vercel (read-only filesystem), this will fail; we catch the error so the
+    app still runs, but user puzzles / times will not persist across requests.
+    """
+    try:
+        os.makedirs(os.path.dirname(PUZZLE_FILE_USER), exist_ok=True)
+        with open(PUZZLE_FILE_USER, "w") as f:
+            json.dump(puzzles, f, indent=2)
+    except OSError as e:
+        # Likely running in a read-only serverless environment (e.g. Vercel)
+        print(f"[WARN] Could not save {PUZZLE_FILE_USER}: {e}")
 
 def get_puzzle_ids():
     """Return metadata (size, difficulty) for all *preloaded* puzzles."""

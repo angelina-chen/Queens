@@ -65,7 +65,7 @@ class PuzzleFile {
     user_times : list[float]
 }
 
-FlaskApp --> Game : "creates and uses"
-FlaskApp --> PuzzleFile : "reads/writes"
-Game --> PuzzleFile : "stores puzzles"
-Game --> Queens : "uses solver"
+FlaskApp --> Game 
+FlaskApp --> PuzzleFile 
+Game --> PuzzleFile 
+Game --> Queens 

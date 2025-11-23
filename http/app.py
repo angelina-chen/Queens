@@ -1,5 +1,12 @@
 from flask import Flask, jsonify, request, render_template
 import os, sys, json, traceback
+import requests
+
+SUPABASE_URL = os.environ.get("https://nzveuprdbxvhggnlvvfy.supabase.co")
+SUPABASE_KEY = os.environ.get("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56dmV1cHJkYnh2aGdnbmx2dmZ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM4NjkzNjYsImV4cCI6MjA3OTQ0NTM2Nn0.G6FhiCpel7LZHlhuq-jKiIJIkNprhhcklmJzD_nx9DY")
+SUPABASE_TABLE = "kv"
+SUPABASE_PUZZLE_KEY = "user_puzzles"
+
 
 # Add the http/ directory itself to sys.path so "helpers" is importable as a package/module
 BASE_DIR = os.path.dirname(__file__)
@@ -24,27 +31,57 @@ def load_preloaded_puzzles():
 
 
 def load_user_puzzles():
-    """Load puzzles created by players."""
-    if not os.path.exists(PUZZLE_FILE_USER):
+    """Load puzzles from Supabase key-value store."""
+    if not SUPABASE_URL or not SUPABASE_KEY:
         return {}
-    with open(PUZZLE_FILE_USER, "r") as f:
-        return json.load(f)
+
+    url = f"{SUPABASE_URL}/rest/v1/{SUPABASE_TABLE}"
+    headers = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": f"Bearer {SUPABASE_KEY}",
+    }
+    params = {
+        "select": "value",
+        "key": f"eq.{SUPABASE_PUZZLE_KEY}",
+    }
+
+    resp = requests.get(url, headers=headers, params=params)
+
+    if not resp.ok:
+        print("Error loading from Supabase:", resp.text)
+        return {}
+
+    rows = resp.json()
+    if not rows:
+        return {}
+
+    return rows[0].get("value", {})
+
 
 
 def save_user_puzzles(puzzles):
-    """
-    Save user puzzle data to disk.
+    """Save puzzles to Supabase via REST API."""
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        print("Supabase ENV vars missing")
+        return
 
-    On Vercel (read-only filesystem), this will fail; we catch the error so the
-    app still runs, but user puzzles / times will not persist across requests.
-    """
-    try:
-        os.makedirs(os.path.dirname(PUZZLE_FILE_USER), exist_ok=True)
-        with open(PUZZLE_FILE_USER, "w") as f:
-            json.dump(puzzles, f, indent=2)
-    except OSError as e:
-        # Likely running in a read-only serverless environment (e.g. Vercel)
-        print(f"[WARN] Could not save {PUZZLE_FILE_USER}: {e}")
+    url = f"{SUPABASE_URL}/rest/v1/{SUPABASE_TABLE}"
+    headers = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": f"Bearer {SUPABASE_KEY}",
+        "Content-Type": "application/json",
+        "Prefer": "resolution=merge-duplicates",
+    }
+
+    payload = [{
+        "key": SUPABASE_PUZZLE_KEY,
+        "value": puzzles,
+    }]
+
+    resp = requests.post(url, headers=headers, json=payload)
+
+    if not resp.ok:
+        print("Error saving to Supabase:", resp.text)
 
 def get_puzzle_ids():
     """Return metadata (size, difficulty) for all *preloaded* puzzles."""

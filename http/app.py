@@ -49,12 +49,12 @@ def get_latest_puzzle_id():
     if resp.ok:
         try:
             latest = resp.json()[0]["id"]
-            print("✅ Fallback puzzle ID:", latest)
+            print("Fallback puzzle ID:", latest)
             return latest
         except Exception as e:
-            print("❌ Failed to parse fallback ID:", e)
+            print("Failed to parse fallback ID:", e)
     else:
-        print("❌ Failed to fetch latest puzzle:", resp.text)
+        print("Failed to fetch latest puzzle:", resp.text)
     return None
 
 
@@ -69,7 +69,7 @@ def save_user_puzzle(puzzle_data):
         int | None: The inserted puzzle ID, or None on failure.
     """
     if not SUPABASE_URL or not SUPABASE_KEY:
-        print("❌ Supabase env vars missing")
+        print("Supabase env vars missing")
         return None
 
     url = f"{SUPABASE_URL}/rest/v1/{PUZZLES_TABLE}"
@@ -79,12 +79,12 @@ def save_user_puzzle(puzzle_data):
         "difficulty": puzzle_data.get("difficulty", "easy"),
     }
 
-    print("📤 Inserting puzzle row:", json.dumps(row, indent=2))
+    print("Inserting puzzle row:", json.dumps(row, indent=2))
     resp = requests.post(url, headers=supabase_headers(), json=[row])
-    print("📥 Supabase insert response:", resp.status_code, repr(resp.text))
+    print("Supabase insert response:", resp.status_code, repr(resp.text))
 
     if not resp.ok:
-        print("❌ Error during insert:", resp.text)
+        print("Error during insert:", resp.text)
         return None
 
     try:

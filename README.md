@@ -5,12 +5,12 @@
 Updated from private repository. Play it here: [queens-bay.vercel.app](url)
 
 ```mermaid
-%%{init: {'theme': 'dark', 'scale': 1.25}}%%
 ---
 config:
   layout: elk
   theme: neo-dark
 ---
+%%{init: {'theme': 'dark', 'scale': 1.25}}%%
 classDiagram
 direction TB
 

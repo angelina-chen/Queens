@@ -1,5 +1,5 @@
 # Queens: A Flask-powered N-Queens puzzle generator and solver
-
+## Live Demo: https://queens-bay.vercel.app
 ## Rules
 Based on LinkedIn Queens:
 1. Each row, column, and colored region must contain exactly one Crown symbol (Queen).

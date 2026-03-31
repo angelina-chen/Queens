@@ -151,7 +151,7 @@ IndexTemplate --> Styles
 GameTemplate --> Styles
 
 VercelConfig --> FlaskApp
-
+```
 ## Sample Gameplay
 Creating a new puzzle:
 <img width="592" height="702" alt="image" src="https://github.com/user-attachments/assets/06b49c91-c0b7-4840-b384-43aa55eb1c86" />

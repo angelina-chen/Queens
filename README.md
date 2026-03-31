@@ -157,17 +157,21 @@ Creating a new puzzle:
 
 <img width="592" height="702" alt="image" src="https://github.com/user-attachments/assets/06b49c91-c0b7-4840-b384-43aa55eb1c86" />
 
+
 Placing queens and marking feature:
 
 <img width="594" height="603" alt="image" src="https://github.com/user-attachments/assets/439a1c7e-7ae6-414b-b9c6-18b1b59feaea" />
+
 
 Getting a hint: 
 
 <img width="544" height="617" alt="image" src="https://github.com/user-attachments/assets/689507de-3214-47c9-acea-0a0b615553bc" />
 
+
 Sample win scenario:
 
 <img width="559" height="639" alt="image" src="https://github.com/user-attachments/assets/e8807ce1-8cb7-4b14-9f79-83f17888fa7f" />
+
 
 Sample loss scenario:
 
